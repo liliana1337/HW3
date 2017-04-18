@@ -12,6 +12,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
         // We need the "final" keyword here to guarantee that the
         // value does not change, as it is used in the callbacks.
         final TextView mTextView = (TextView) findViewById(R.id.my_text);
+        final TextView detailView = (TextView) findViewById(R.id.detailView);
 
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -40,6 +42,18 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         mTextView.setText("Response json: " + response.toString());
+                        // Ok, let's disassemble a bit the json object.
+                        try {
+                            JSONArray receivedList = response.getJSONArray("mylist");
+                            String allTogether = "(";
+                            for (int i = 0; i < receivedList.length(); i++) {
+                                allTogether += receivedList.getString(i) + ";";
+                            }
+                            allTogether += ")";
+                            detailView.setText(allTogether);
+                        } catch (Exception e) {
+                            mTextView.setText("Aaauuugh, received bad json: " + e.getStackTrace());
+                        }
                     }
                 }, new Response.ErrorListener() {
 
