@@ -63,6 +63,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+        // In some cases, we don't want to cache the request.
+        // jsObjRequest.setShouldCache(false);
+
         queue.add(jsObjRequest);
 
     }
