@@ -2,6 +2,7 @@ package com.dealfaro.luca.androidhomephone;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -15,7 +16,12 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import static android.webkit.ConsoleMessage.MessageLevel.LOG;
+import static com.dealfaro.luca.androidhomephone.R.id.detailView;
+
 public class MainActivity extends AppCompatActivity {
+
+    private final String LOG_TAG = "androidhomephone";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,12 +35,17 @@ public class MainActivity extends AppCompatActivity {
 
         // We need the "final" keyword here to guarantee that the
         // value does not change, as it is used in the callbacks.
+
+        getList();
+    }
+
+    private void getList() {
         final TextView mTextView = (TextView) findViewById(R.id.my_text);
         final TextView detailView = (TextView) findViewById(R.id.detailView);
 
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="https://luca-ucsc-teaching-backend.appspot.com/api/get_list";
+        String url = "https://luca-ucsc-teaching-backend.appspot.com/api/get_list";
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -42,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         mTextView.setText("Response json: " + response.toString());
+                        Log.d(LOG_TAG, "Received: " + response.toString());
                         // Ok, let's disassemble a bit the json object.
                         try {
                             JSONArray receivedList = response.getJSONArray("mylist");
@@ -60,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // TODO Auto-generated method stub
+                        Log.d(LOG_TAG, error.toString());
                     }
                 });
 
@@ -67,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
         // jsObjRequest.setShouldCache(false);
 
         queue.add(jsObjRequest);
-
     }
 
 }
