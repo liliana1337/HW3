@@ -18,6 +18,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
         getList();
         sendMsg("Anna", "Clara", "Tschuss!");
+        getMessages("mario");
     }
-
 
     private void sendMsg(final String sender, final String recipient, final String msg) {
 
@@ -83,6 +84,38 @@ public class MainActivity extends AppCompatActivity {
         queue.add(sr);
 
     }
+
+
+    private void getMessages(final String recipient) {
+
+        // Instantiate the RequestQueue.
+        String url = "https://luca-ucsc-teaching-backend.appspot.com/api_w_ndb/get_msg_for_me";
+
+        String my_url = url + "?recipient=" + URLEncoder.encode(recipient);
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(LOG_TAG, "Received: " + response.toString());
+                        // Ok, let's disassemble a bit the json object.
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO Auto-generated method stub
+                        Log.d(LOG_TAG, error.toString());
+                    }
+                });
+
+        // In some cases, we don't want to cache the request.
+        // jsObjRequest.setShouldCache(false);
+
+        queue.add(jsObjRequest);
+    }
+
 
 
     private void getList() {
