@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -17,6 +18,9 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private Button btnPost;
@@ -47,7 +51,9 @@ public class MainActivity extends AppCompatActivity {
 
                             @Override
                             public void onResponse(JSONObject response) {
-                                mTextView.setText("Response: " + response.toString());
+                               mTextView.setText("Response: " + response.toString());
+                                //Log.d(LOG_TAG, "Received: " + response.toString());
+
                             }
                         }, new Response.ErrorListener() {
 
@@ -61,23 +67,34 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.buttonPost:
                 // do post
-                url ="https://luca-ucsc-teaching-backend.appspot.com/hw3/request_via_post?token=abracadabra";
-                JsonObjectRequest jsObjRequestpost = new JsonObjectRequest
-                        (Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
-
+                StringRequest sr = new StringRequest(Request.Method.POST,
+                        "https://luca-ucsc-teaching-backend.appspot.com/hw3/request_via_post",
+                        new Response.Listener<String>() {
                             @Override
-                            public void onResponse(JSONObject response) {
+                            public void onResponse(String response) {
+                                //Log.d(LOG_TAG, "Got:" + response);
                                 mTextView.setText("Response: " + response.toString());
                             }
                         }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                }){
+                    @Override
+                    protected Map<String,String> getParams(){
+                        Map<String,String> params = new HashMap<String, String>();
+                        params.put("token", "abracadabra");
+                        return params;
+                    }
 
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                // TODO Auto-generated method stub
-                                Log.d(LOG_TAG, error.toString());
-                            }
-                        });
-                queue.add(jsObjRequestpost);
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        Map<String,String> params = new HashMap<String, String>();
+                        params.put("Content-Type","application/x-www-form-urlencoded");
+                        return params;
+                    }
+                };
+                queue.add(sr);
                 break;
         }
 
